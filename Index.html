@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Workspace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- LINK TO CSS FILE -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="overlay" onclick="toggleSidebar()"></div>
+
+    <!-- CUSTOM RIGHT CLICK MENU -->
+    <div id="contextMenu">
+        <div class="ctx-item" onclick="showHome()">🏠 Go to Home</div>
+        <div class="ctx-item" onclick="document.getElementById('searchBox').focus()">🔍 Search</div>
+        <div class="ctx-item" onclick="location.reload()">↻ Refresh App</div>
+        <div class="ctx-item ctx-danger" onclick="document.getElementById('contextMenu').style.display='none'">✕ Close Menu</div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="brand">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px; color:var(--accent)"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            Files Hub
+        </div>
+
+        <div class="search-wrapper">
+            <input type="text" id="searchBox" class="search-box" placeholder="Search... (Ctrl + K)" onkeyup="filterMenu()">
+        </div>
+
+        <div class="menu-container">
+            <div class="home-btn" onclick="showHome()"><span>🏠</span> Overview</div>
+            
+            <!-- DYNAMIC CONTENT WILL BE LOADED HERE BY JS -->
+            <div id="dynamic-menu-root"></div>
+        </div>
+    </div>
+
+    <!-- MAIN UI -->
+    <div class="main">
+        <div class="top-bar">
+            <button class="hamburger" onclick="toggleSidebar()">☰</button>
+            <div class="breadcrumbs">
+                <span>Dashboard</span> <span style="color:#cbd5e1">/</span>
+                <span class="crumb-active" id="pageTitle">Overview</span>
+            </div>
+        </div>
+
+        <div class="window-container">
+            <div class="window-bar">
+                <div class="dot red"></div> <div class="dot yellow"></div> <div class="dot green"></div>
+                <div class="window-title">Secure File Viewer</div>
+            </div>
+
+            <div class="window-content">
+                <div class="dashboard-home" id="homeScreen">
+                    <div class="welcome-icon">📂</div>
+                    <h2 style="color:#1e293b; margin-bottom: 5px;">Files Hub</h2>
+                    <p style="color:#64748b; font-size:14px;">Select a folder or use Ctrl+K to search.</p>
+                </div>
+                <div class="loader" id="loader"></div>
+                <iframe id="driveFrame" src="about:blank"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- LINK TO JS FILE -->
+    <script src="script.js"></script>
+</body>
+</html>
