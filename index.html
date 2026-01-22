@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Portal | Clean & Scalable</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- DESIGN SYSTEM --- */
+        :root {
+            --bg-color: #fcfcfc;
+            --card-bg: #ffffff;
+            --text-main: #2d3436;
+            --text-dim: #636e72;
+            --accent: #0984e3;
+            --border: #f1f2f6;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { font-weight: 600; font-size: 1.2rem; letter-spacing: -0.5px; cursor: pointer; }
+
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+        /* --- LAYOUT --- */
+        main {
+            margin-top: 80px;
+            padding: 2rem 5%;
+            min-height: 80vh;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero h1 { font-size: 3rem; margin-bottom: 1rem; font-weight: 600; }
+        .hero p { color: var(--text-dim); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+
+        /* --- DATA COMPONENTS --- */
+        .data-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: var(--transition);
+        }
+
+        .data-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: #fafafa;
+            padding: 1rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+        }
+
+        /* --- STATES --- */
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            padding: 2rem;
+            background: #fff5f5;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .nav-links { display: none; } /* Simplified for demo - add hamburger if needed */
+            .hero h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo" onclick="window.location.hash = 'home'">INSTITUTION PORTAL</div>
+        <ul class="nav-links" id="main-nav">
+            </ul>
+    </nav>
+
+    <main id="app">
+        <div id="loader" class="loader">Fetching latest data...</div>
+        <div id="content-area"></div>
+    </main>
+
+    <script>
+    const SITE_CONFIG = {
+        sheetId: '1wgPQaYPCncNyyJnW-fu_nygIF-ZaoKBM5FQxALI8bF8', 
+        pages: [
+            { id: 'home', title: 'Home', type: 'static', content: '<div class="hero"><h1>Welcome</h1></div>' },
+            { id: 'master', title: 'Master', type: 'dynamic', sheetId: '1wgPQaYPCncNyyJnW-fu_nygIF-ZaoKBM5FQxALI8bF8', gid: '1430286757' },
+            { id: 'society', title: 'Society', type: 'dynamic', sheetId: '1wgPQaYPCncNyyJnW-fu_nygIF-ZaoKBM5FQxALI8bF8', gid: '85431680' },
+            { id: 'documents', title: 'Docs', type: 'dynamic', sheetId: '1wgPQaYPCncNyyJnW-fu_nygIF-ZaoKBM5FQxALI8bF8', gid: '885792851' }
+        ]
+    };
+
+    const app = document.getElementById('content-area');
+    const nav = document.getElementById('main-nav');
+    const loader = document.getElementById('loader');
+
+    function init() {
+        renderNav();
+        window.addEventListener('hashchange', router);
+        router();
+    }
+
+    function renderNav() {
+        nav.innerHTML = SITE_CONFIG.pages.map(p => `<li><a href="#${p.id}" data-page="${p.id}">${p.title}</a></li>`).join('');
+    }
+
+    async function router() {
+        const hash = window.location.hash.replace('#', '') || 'home';
+        const page = SITE_CONFIG.pages.find(p => p.id === hash);
+        app.classList.remove('visible');
+        if (!page) return;
+
+        if (page.type === 'static') {
+            renderContent(page.content);
+        } else {
+            fetchAndRenderData(page);
+        }
+    }
+
+    async function fetchAndRenderData(page) {
+        loader.style.display = 'block';
+        app.innerHTML = '';
+        
+        // DEBUG: Log the URL we are trying to reach
+        const url = `https://docs.google.com/spreadsheets/d/${page.sheetId}/gviz/tq?tqx=out:json&gid=${page.gid}`;
+        console.log("Attempting to fetch from:", url);
+
+        try {
+            const response = await fetch(url);
+            const text = await response.text();
+            
+            // This part cleans the Google "Wall of text" into actual data
+            const jsonText = text.match(/google\.visualization\.Query\.setResponse\(([\s\S\w]+)\)/);
+            if (!jsonText) throw new Error("Could not parse Google Response");
+            
+            const json = JSON.parse(jsonText[1]);
+            const rows = json.table.rows;
+            const cols = json.table.cols;
+
+            let html = `<div class="hero"><h1>${page.title}</h1></div><div class="table-container"><table><thead><tr>`;
+            cols.forEach(col => { html += `<th>${col.label || ''}</th>`; });
+            html += `</tr></thead><tbody>`;
+            rows.forEach(row => {
+                html += `<tr>`;
+                row.c.forEach(cell => { html += `<td>${cell ? cell.v : ''}</td>`; });
+                html += `</tr>`;
+            });
+            html += `</tbody></table></div>`;
+            renderContent(html);
+
+        } catch (err) {
+            console.error("DETAILED ERROR:", err);
+            renderContent(`<div class="error-msg">Error: ${err.message}. Check your Browser Console (F12) for details.</div>`);
+        } finally {
+            loader.style.display = 'none';
+        }
+    }
+
+    function renderContent(html) {
+        app.innerHTML = `<div class="container" id="page-container">${html}</div>`;
+        setTimeout(() => { document.getElementById('page-container').classList.add('visible'); }, 50);
+    }
+
+    init();
+</script>
+</body>
+</html>
